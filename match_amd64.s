@@ -58,13 +58,13 @@ loopback_find8:
 	// MPSADBW $0, X0, X1 	// Compare lower part X1[0:12] to X0[0:4], store in X1
 	BYTE $0x66; BYTE $0x0f; BYTE $0x3a; BYTE $0x42; BYTE $0xc8; BYTE $0x00
 
-	// MPSADBW $7, X0, X2 	// Compare lower part X2[4:16] to X0[4:8], store in X2
-	BYTE $0x66; BYTE $0x0f; BYTE $0x3a; BYTE $0x42; BYTE $0xd0; BYTE $0x07
+	// MPSADBW $5, X0, X2 	// Compare lower part X2[4:16] to X0[4:8], store in X2
+	BYTE $0x66; BYTE $0x0f; BYTE $0x3a; BYTE $0x42; BYTE $0xd0; BYTE $0x05
 
 	PCMPEQW X4, X1		// if result == 0 {set word to 0xffff}
 	PCMPEQW X4, X2		// if result == 0 {set word to 0xffff}
-	PAND    X1, X5      // Lower result as bytes
-	PAND    X2, X6      // upper result as bytes
+	PAND    X5, X1      // Lower result as bytes
+	PAND    X6, X2      // upper result as bytes
 	POR     X2, X1
 	PMOVMSKB X1, R9		// Transfer to bits
 
