@@ -38,6 +38,8 @@ func find4(needle, haystack, dst []byte) {
 	find4Go(needle, haystack, dst)
 }
 
+// find4Go is the reference implementation that mimmics the SSE4
+// implemenation.
 func find4Go(needle, haystack, dst []byte) {
 	end := uint(len(haystack) - 3)
 	for i := uint(0); i < end; i++ {
@@ -125,6 +127,8 @@ func find8(needle, haystack []byte, dst []uint16) {
 	find8Go(needle, haystack, dst)
 }
 
+// find8Go is the reference implementation that mimmics the SSE4
+// implemenation.
 func find8Go(needle, haystack []byte, dst []uint16) {
 	end := uint(len(haystack) - 7)
 	for i := uint(0); i < end; i++ {
