@@ -7,18 +7,15 @@ import (
 	fuzz "github.com/google/gofuzz"
 )
 
-var haystack = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-
-func TestMatch4(t *testing.T) {
+func ExampleMatch4() {
+	var haystack = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 	found := Match4(haystack[8:12], haystack, nil)
-	expect := "[]int{8, 24, 40, 56}"
-	got := fmt.Sprintf("%#v", found)
-	if expect != got {
-		t.Fatal("Expected", expect, "but got", got)
-	}
+	fmt.Printf("%#v", found)
+	//Output: []int{8, 24, 40, 56}
 }
 
 func TestMatch4End(t *testing.T) {
+	var haystack = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 	found := Match4(haystack[60:64], haystack, nil)
 	expect := "[]int{12, 28, 44, 60}"
 	got := fmt.Sprintf("%#v", found)
@@ -27,13 +24,20 @@ func TestMatch4End(t *testing.T) {
 	}
 }
 
-func TestMatch8(t *testing.T) {
+func ExampleMatch8() {
+	var haystack = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 	found := Match8(haystack[8:16], haystack, nil)
-	expect := "[]int{8, 24, 40, 56}"
-	got := fmt.Sprintf("%#v", found)
-	if expect != got {
-		t.Fatal("Expected", expect, "but got", got)
-	}
+	fmt.Printf("%#v", found)
+	// Output: []int{8, 24, 40, 56}
+}
+
+func ExampleMatch8And4() {
+	var haystack = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115}
+	f8, f4 := Match8And4(haystack[12:20], haystack, nil, nil)
+	fmt.Printf("Length 8 match: %#v\n", f8)
+	fmt.Printf("Length 4 match: %#v", f4)
+	// Output: Length 8 match: []int{12}
+	// Length 4 match: []int{28}
 }
 
 func BenchmarkMatch8(b *testing.B) {
