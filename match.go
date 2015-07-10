@@ -66,7 +66,7 @@ func Match8(needle, haystack []byte, indices []int) []int {
 }
 
 func Find8(needle, haystack []byte, dst []uint16) {
-	if false {
+	if true {
 		Find8SSE4(needle, haystack, dst)
 		return
 	}
