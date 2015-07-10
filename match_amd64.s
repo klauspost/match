@@ -9,7 +9,6 @@ TEXT ·find4SSE4(SB), 7, $0
     MOVQ    dst+48(FP),DX     	   		// DX: &dst
 
     MOVD    (R8), X0					// X0: needle
-    //PSHUFD  $0, X0, X0					// X0: needle (all dwords)
     PXOR    X4, X4						// X4: Zero
 
     SHRQ   $3, R10						// len(haystack)/8
