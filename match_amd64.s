@@ -1,8 +1,8 @@
 //+build !noasm !appengine
 
 
-// func Find4SSE4(needle, haystack, dst []byte)
-TEXT ·Find4SSE4(SB), 7, $0
+// func find4SSE4(needle, haystack, dst []byte)
+TEXT ·find4SSE4(SB), 7, $0
     MOVQ    needle+0(FP),R8        		// R8: &needle
     MOVQ    haystack+24(FP),SI     		// SI: &haystack
     MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)
@@ -34,8 +34,8 @@ loopback_find4:
 done_find4:    
     RET
 
-// func Find8SSE4(needle, haystack []dst, dst []uint16)
-TEXT ·Find8SSE4(SB), 7, $0
+// func find8SSE4(needle, haystack []dst, dst []uint16)
+TEXT ·find8SSE4(SB), 7, $0
     MOVQ    needle+0(FP),R8        		// R8: &needle
     MOVQ    haystack+24(FP),SI     		// SI: &haystack
     MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)

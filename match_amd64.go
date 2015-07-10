@@ -1,4 +1,15 @@
+//+build !noasm
+//+build !appengine
+
 package match
 
-func Find4SSE4(needle, haystack, dst []byte)
-func Find8SSE4(needle, haystack []byte, dst []uint16)
+import (
+	"github.com/klauspost/cpuid"
+)
+
+func init() {
+	hasAssembler = cpuid.CPU.SSE4()
+}
+
+func find4SSE4(needle, haystack, dst []byte)
+func find8SSE4(needle, haystack []byte, dst []uint16)

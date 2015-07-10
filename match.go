@@ -1,5 +1,7 @@
 package match
 
+var hasAssembler bool
+
 func Match4(needle, haystack []byte, indices []int) []int {
 	if len(needle) != 4 {
 		panic("length not 4")
@@ -11,7 +13,7 @@ func Match4(needle, haystack []byte, indices []int) []int {
 	if indices == nil {
 		indices = make([]int, 0, 10)
 	}
-	Find4(needle, haystack, dst)
+	find4(needle, haystack, dst)
 	for i, v := range dst {
 		j := 0
 		for v != 0 {
@@ -25,11 +27,15 @@ func Match4(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
-func Find4(needle, haystack, dst []byte) {
-	if true {
-		Find4SSE4(needle, haystack, dst)
+func find4(needle, haystack, dst []byte) {
+	if hasAssembler {
+		find4SSE4(needle, haystack, dst)
 		return
 	}
+	find4Go(needle, haystack, dst)
+}
+
+func find4Go(needle, haystack, dst []byte) {
 	end := uint(len(haystack) - 3)
 	for i := uint(0); i < end; i++ {
 		if needle[0] == haystack[i] {
@@ -51,7 +57,7 @@ func Match8(needle, haystack []byte, indices []int) []int {
 	if indices == nil {
 		indices = make([]int, 0, 10)
 	}
-	Find8(needle, haystack, dst)
+	find8(needle, haystack, dst)
 	for i, v := range dst {
 		j := 0
 		for v != 0 {
@@ -83,7 +89,7 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 	} else {
 		indices4 = indices4[:0]
 	}
-	Find8(needle, haystack, dst)
+	find8(needle, haystack, dst)
 	for i, v := range dst {
 		j := 0
 		for v != 0 {
@@ -99,11 +105,15 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 	return indices8, indices4
 }
 
-func Find8(needle, haystack []byte, dst []uint16) {
-	if true {
-		Find8SSE4(needle, haystack, dst)
+func find8(needle, haystack []byte, dst []uint16) {
+	if hasAssembler {
+		find8SSE4(needle, haystack, dst)
 		return
 	}
+	find8Go(needle, haystack, dst)
+}
+
+func find8Go(needle, haystack []byte, dst []uint16) {
 	end := uint(len(haystack) - 7)
 	for i := uint(0); i < end; i++ {
 		if needle[0] == haystack[i] && needle[1] == haystack[i+1] && needle[2] == haystack[i+2] && needle[3] == haystack[i+3] {
