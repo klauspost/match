@@ -79,7 +79,7 @@ func Match8(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
-// Match4And will return start indeces of all matches of a 8 byte needle
+// Match4And8 will return start indeces of all matches of a 8 byte needle
 // in a haystack that is a multiple of 16 in length.
 // Matches for the first four bytes are returned in the first index, and 8
 // byte matches are returned in the second. An index that is an 8 byte match will
