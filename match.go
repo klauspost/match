@@ -2,6 +2,9 @@ package match
 
 var hasAssembler bool
 
+// Match4 will return start indeces of all matches of a 4 byte needle
+// in a haystack that is a multiple of 16 in length.
+// Indeces are returned ordered from index 0 and upwards.
 func Match4(needle, haystack []byte, indices []int) []int {
 	if len(needle) != 4 {
 		panic("length not 4")
@@ -46,6 +49,9 @@ func find4Go(needle, haystack, dst []byte) {
 	}
 }
 
+// Match8 will return start indeces of all matches of a 8 byte needle
+// in a haystack that is a multiple of 16 in length.
+// Indeces are returned ordered from index 0 and upwards.
 func Match8(needle, haystack []byte, indices []int) []int {
 	if len(needle) != 8 {
 		panic("length not 8")
@@ -71,6 +77,12 @@ func Match8(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
+// Match4And will return start indeces of all matches of a 8 byte needle
+// in a haystack that is a multiple of 16 in length.
+// Matches for the first four bytes are returned in the first index, and 8
+// byte matches are returned in the second. An index that is an 8 byte match will
+// not be present in the 4-byte matches.
+// Indeces are returned ordered from index 0 and upwards.
 func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int, []int) {
 	if len(needle) != 8 {
 		panic("length not 8")
