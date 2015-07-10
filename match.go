@@ -65,6 +65,40 @@ func Match8(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
+func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int, []int) {
+	if len(needle) != 8 {
+		panic("length not 8")
+	}
+	if len(haystack)&15 != 0 {
+		panic("haystack must be dividable by 16")
+	}
+	dst := make([]uint16, len(haystack)/8)
+	if indices8 == nil {
+		indices8 = make([]int, 0, 10)
+	} else {
+		indices8 = indices8[:0]
+	}
+	if indices4 == nil {
+		indices4 = make([]int, 0, 10)
+	} else {
+		indices4 = indices4[:0]
+	}
+	Find8(needle, haystack, dst)
+	for i, v := range dst {
+		j := 0
+		for v != 0 {
+			if v&3 == 3 {
+				indices8 = append(indices8, i*8+j)
+			} else if v&1 == 1 {
+				indices4 = append(indices4, i*8+j)
+			}
+			v >>= 2
+			j++
+		}
+	}
+	return indices8, indices4
+}
+
 func Find8(needle, haystack []byte, dst []uint16) {
 	if true {
 		Find8SSE4(needle, haystack, dst)
