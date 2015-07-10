@@ -3,17 +3,17 @@
 
 // func find4SSE4(needle, haystack, dst []byte)
 TEXT ·find4SSE4(SB), 7, $0
-    MOVQ    needle+0(FP),R8        		// R8: &needle
-    MOVQ    haystack+24(FP),SI     		// SI: &haystack
-    MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)
-    MOVQ    dst+48(FP),DX     	   		// DX: &dst
+	MOVQ    needle+0(FP),R8        		// R8: &needle
+	MOVQ    haystack+24(FP),SI     		// SI: &haystack
+	MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)
+	MOVQ    dst+48(FP),DX     	   		// DX: &dst
 
-    MOVD    (R8), X0					// X0: needle
-    PXOR    X4, X4						// X4: Zero
+	MOVD    (R8), X0					// X0: needle
+	PXOR    X4, X4						// X4: Zero
 
-    SHRQ   $3, R10						// len(haystack)/8
-    CMPQ    R10 ,$0
-    JEQ     done_find4
+	SHRQ   $3, R10						// len(haystack)/8
+	CMPQ    R10 ,$0
+	JEQ     done_find4
 loopback_find4:
 	MOVOU (SI),X1   	// haystack[x]
 
@@ -31,25 +31,25 @@ loopback_find4:
 	JNZ loopback_find4
 
 done_find4:    
-    RET
+	RET
 
 // func find8SSE4(needle, haystack []dst, dst []uint16)
 TEXT ·find8SSE4(SB), 7, $0
-    MOVQ    needle+0(FP),R8        		// R8: &needle
-    MOVQ    haystack+24(FP),SI     		// SI: &haystack
-    MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)
-    MOVQ    dst+48(FP),DX     	   		// DX: &dst
+	MOVQ    needle+0(FP),R8        		// R8: &needle
+	MOVQ    haystack+24(FP),SI     		// SI: &haystack
+	MOVQ    haystack_len+32(FP), R10  	// R10: len(haystack)
+	MOVQ    dst+48(FP),DX     	   		// DX: &dst
 
-    MOVQ    (R8), X0					// X0: needle
-    PXOR    X4, X4						// X4: Zero
+	MOVQ    (R8), X0					// X0: needle
+	PXOR    X4, X4						// X4: Zero
 	PCMPEQW X5, X5						
 	PCMPEQW X6, X6
 	PSRLW  $8, X5						//  0xffff >> 8 = 0x00ff, lower byte mask per word (shifts in zeros)
 	PSLLW  $8, X6						//  0xffff << 8  = 0xff00, upper byte mask per word.
 
-    SHRQ   $3, R10						// len(haystack)/8
-    CMPQ    R10 ,$0
-    JEQ     done_find8
+	SHRQ   $3, R10						// len(haystack)/8
+	CMPQ    R10 ,$0
+	JEQ     done_find8
 loopback_find8:
 	MOVOU (SI),X1   	// haystack[x]
 	MOVOA X1, X2
@@ -74,4 +74,4 @@ loopback_find8:
 	JNZ loopback_find8
 
 done_find8:    
-    RET
+	RET
