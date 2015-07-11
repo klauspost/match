@@ -12,7 +12,7 @@ func Match4(needle, haystack []byte, indices []int) []int {
 	if len(haystack)&15 != 0 {
 		panic("haystack must be dividable by 16")
 	}
-	dst := make([]byte, len(haystack)/8)
+	dst := make([]uint16, len(haystack)/16)
 	if indices == nil {
 		indices = make([]int, 0, 10)
 	}
@@ -21,7 +21,7 @@ func Match4(needle, haystack []byte, indices []int) []int {
 		j := 0
 		for v != 0 {
 			if v&1 == 1 {
-				indices = append(indices, i*8+j)
+				indices = append(indices, i*16+j)
 			}
 			v >>= 1
 			j++
@@ -30,7 +30,7 @@ func Match4(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
-func find4(needle, haystack, dst []byte) {
+func find4(needle, haystack []byte, dst []uint16) {
 	if hasAssembler {
 		find4SSE4(needle, haystack, dst)
 		return
@@ -40,12 +40,12 @@ func find4(needle, haystack, dst []byte) {
 
 // find4Go is the reference implementation that mimmics the SSE4
 // implemenation.
-func find4Go(needle, haystack, dst []byte) {
+func find4Go(needle, haystack []byte, dst []uint16) {
 	end := uint(len(haystack) - 3)
 	for i := uint(0); i < end; i++ {
 		if needle[0] == haystack[i] {
 			if needle[1] == haystack[i+1] && needle[2] == haystack[i+2] && needle[3] == haystack[i+3] {
-				dst[i>>3] |= 1 << (i & 7)
+				dst[i>>4] |= 1 << (i & 15)
 			}
 		}
 	}
@@ -61,7 +61,7 @@ func Match8(needle, haystack []byte, indices []int) []int {
 	if len(haystack)&15 != 0 {
 		panic("haystack must be dividable by 16")
 	}
-	dst := make([]uint16, len(haystack)/8)
+	dst := make([]uint32, len(haystack)/16)
 	if indices == nil {
 		indices = make([]int, 0, 10)
 	}
@@ -70,7 +70,7 @@ func Match8(needle, haystack []byte, indices []int) []int {
 		j := 0
 		for v != 0 {
 			if v&3 == 3 {
-				indices = append(indices, i*8+j)
+				indices = append(indices, i*16+j)
 			}
 			v >>= 2
 			j++
@@ -92,7 +92,7 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 	if len(haystack)&15 != 0 {
 		panic("haystack must be dividable by 16")
 	}
-	dst := make([]uint16, len(haystack)/8)
+	dst := make([]uint32, len(haystack)/16)
 	if indices8 == nil {
 		indices8 = make([]int, 0, 10)
 	} else {
@@ -108,9 +108,9 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 		j := 0
 		for v != 0 {
 			if v&3 == 3 {
-				indices8 = append(indices8, i*8+j)
+				indices8 = append(indices8, i*16+j)
 			} else if v&1 == 1 {
-				indices4 = append(indices4, i*8+j)
+				indices4 = append(indices4, i*16+j)
 			}
 			v >>= 2
 			j++
@@ -119,7 +119,7 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 	return indices8, indices4
 }
 
-func find8(needle, haystack []byte, dst []uint16) {
+func find8(needle, haystack []byte, dst []uint32) {
 	if hasAssembler {
 		find8SSE4(needle, haystack, dst)
 		return
@@ -129,14 +129,14 @@ func find8(needle, haystack []byte, dst []uint16) {
 
 // find8Go is the reference implementation that mimmics the SSE4
 // implemenation.
-func find8Go(needle, haystack []byte, dst []uint16) {
+func find8Go(needle, haystack []byte, dst []uint32) {
 	end := uint(len(haystack) - 7)
 	for i := uint(0); i < end; i++ {
 		if needle[0] == haystack[i] && needle[1] == haystack[i+1] && needle[2] == haystack[i+2] && needle[3] == haystack[i+3] {
-			dst[i>>3] |= 1 << ((i & 7) << 1)
+			dst[i>>4] |= 1 << ((i & 15) << 1)
 		}
 		if needle[4] == haystack[i+4] && needle[5] == haystack[i+5] && needle[6] == haystack[i+6] && needle[7] == haystack[i+7] {
-			dst[i>>3] |= 2 << ((i & 7) << 1)
+			dst[i>>4] |= 2 << ((i & 15) << 1)
 		}
 	}
 }
