@@ -12,4 +12,6 @@ func init() {
 }
 
 func find4SSE4(needle, haystack []byte, dst []uint16)
+func find4SSE4s(needle, haystack string, dst []uint16)
 func find8SSE4(needle, haystack []byte, dst []uint32)
+func find8SSE4s(needle, haystack string, dst []uint16)

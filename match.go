@@ -30,12 +30,46 @@ func Match4(needle, haystack []byte, indices []int) []int {
 	return indices
 }
 
+// Match4String performs the same operation as Match4 on strings
+func Match4String(needle, haystack string, indices []int) []int {
+	if len(needle) != 4 {
+		panic("length not 4")
+	}
+	if len(haystack)&15 != 0 {
+		panic("haystack must be dividable by 16")
+	}
+	dst := make([]uint16, len(haystack)/16)
+	if indices == nil {
+		indices = make([]int, 0, 10)
+	}
+	find4string(needle, haystack, dst)
+	for i, v := range dst {
+		j := 0
+		for v != 0 {
+			if v&1 == 1 {
+				indices = append(indices, i*16+j)
+			}
+			v >>= 1
+			j++
+		}
+	}
+	return indices
+}
+
 func find4(needle, haystack []byte, dst []uint16) {
 	if hasAssembler {
 		find4SSE4(needle, haystack, dst)
 		return
 	}
 	find4Go(needle, haystack, dst)
+}
+
+func find4string(needle, haystack string, dst []uint16) {
+	if hasAssembler {
+		find4SSE4s(needle, haystack, dst)
+		return
+	}
+	find4Go([]byte(needle), []byte(haystack), dst)
 }
 
 // find4Go is the reference implementation that mimmics the SSE4

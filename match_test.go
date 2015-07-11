@@ -57,6 +57,38 @@ func ExampleMatch8And4() {
 	// Length 4 match: []int{28}
 }
 
+func BenchmarkMatch4String(b *testing.B) {
+	size := 1024
+	found := make([]int, 0, 10)
+	ta := make([]byte, size)
+	f := fuzz.New()
+	f.NumElements(size, size)
+	f.NilChance(0.0)
+	f.Fuzz(&ta)
+	txt := string(ta)
+	b.SetBytes(int64(size))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		found = Match4String(txt[800:804], txt, found)
+	}
+}
+
+// Shows the overhead of converting to bytes.
+func BenchmarkMatch4Convert(b *testing.B) {
+	size := 1024
+	found := make([]int, 0, 10)
+	ta := make([]byte, size)
+	f := fuzz.New()
+	f.NumElements(size, size)
+	f.NilChance(0.0)
+	f.Fuzz(&ta)
+	txt := string(ta)
+	b.SetBytes(int64(size))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		found = Match4([]byte(txt[800:804]), []byte(txt), found)
+	}
+}
 func BenchmarkMatch8(b *testing.B) {
 	size := 32768
 	ta := make([]byte, size)
