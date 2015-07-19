@@ -1,6 +1,7 @@
 package match
 
-var hasAssembler bool
+var UseSse41 bool
+var UseSse42 bool
 
 // Match4 will return start indeces of all matches of a 4 byte needle
 // in a haystack that is a multiple of 16 in length.
@@ -57,7 +58,7 @@ func Match4String(needle, haystack string, indices []int) []int {
 }
 
 func find4(needle, haystack []byte, dst []uint16) {
-	if hasAssembler {
+	if UseSse41 {
 		find4SSE4(needle, haystack, dst)
 		return
 	}
@@ -65,7 +66,7 @@ func find4(needle, haystack []byte, dst []uint16) {
 }
 
 func find4string(needle, haystack string, dst []uint16) {
-	if hasAssembler {
+	if UseSse41 {
 		find4SSE4s(needle, haystack, dst)
 		return
 	}
@@ -154,7 +155,7 @@ func Match8And4(needle, haystack []byte, indices8 []int, indices4 []int) ([]int,
 }
 
 func find8(needle, haystack []byte, dst []uint32) {
-	if hasAssembler {
+	if UseSse41 {
 		find8SSE4(needle, haystack, dst)
 		return
 	}
@@ -173,4 +174,30 @@ func find8Go(needle, haystack []byte, dst []uint32) {
 			dst[i>>4] |= 2 << ((i & 15) << 1)
 		}
 	}
+}
+
+var MatchLen func([]byte, []byte, int) int
+
+func init() {
+	MatchLen = matchLenSSE4
+}
+
+func matchLen(a, b []byte, max int) int {
+	/*	if len(a) < max {
+			panic("a too short")
+		}
+		if len(b) < max {
+			panic("a too short")
+		}
+		if UseSse42 {
+			return matchLenSSE4(a, b, max)
+		}*/
+	a = a[:max]
+	b = b[:max]
+	for i, av := range a {
+		if b[i] != av {
+			return i
+		}
+	}
+	return max
 }

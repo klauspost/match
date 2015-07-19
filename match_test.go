@@ -57,6 +57,57 @@ func ExampleMatch8And4() {
 	// Length 4 match: []int{28}
 }
 
+func ExampleMatchLen() {
+	var data = []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+		100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115,
+	}
+	// Get match length
+	length := MatchLen(data[10:], data[26:], 16)
+
+	fmt.Printf("Number of matching bytes: %d, first mismatch %d/%d\n", length, data[10+length], data[26+length])
+	// Output: Number of matching bytes: 6, first mismatch 0/100
+}
+
+func TestMatchLen(t *testing.T) {
+	var data []byte
+
+	for size := 0; size < 1000; size++ {
+		f := fuzz.New()
+		f.NumElements(size, size*2)
+		f.NilChance(0.0)
+		f.Fuzz(&data)
+
+		length := MatchLen(data, data, size)
+		if length != size {
+			t.Fatalf("unexpected match length, (got) %d != %d (expected)", length, size)
+		}
+		if size == 0 {
+			continue
+		}
+		// Change a value, and test if it is picked up
+		var m int
+		f.Fuzz(&m)
+		if m < 0 {
+			m *= -1
+		}
+		m %= len(data)
+		var b = make([]byte, len(data))
+		copy(b, data)
+		b[m] = b[m] ^ 255
+		length = MatchLen(data, b, size)
+		if m < size {
+			if length != m {
+				t.Fatalf("unexpected match length, (got) %d != %d (expected)", length, m)
+			}
+		} else {
+			if length != size {
+				t.Fatalf("unexpected match length, (got) %d != %d (expected)", length, size)
+			}
+		}
+	}
+}
+
 func BenchmarkMatch4String(b *testing.B) {
 	size := 1024
 	found := make([]int, 0, 10)
@@ -117,5 +168,19 @@ func BenchmarkMatch8And4(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		found4, found8 = Match8And4(ta[800:808], ta, found4, found8)
+	}
+}
+
+func BenchmarkMatchLen256(b *testing.B) {
+	size := 256
+	ta := make([]byte, size)
+	f := fuzz.New()
+	f.NumElements(size, size)
+	f.NilChance(0.0)
+	f.Fuzz(&ta)
+	b.SetBytes(int64(size))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = MatchLen(ta, ta, size)
 	}
 }
