@@ -176,22 +176,14 @@ func find8Go(needle, haystack []byte, dst []uint32) {
 	}
 }
 
-var MatchLen func([]byte, []byte, int) int
-
-func init() {
-	MatchLen = matchLenSSE4
+func MatchLen(a []byte, b []byte, max int) int {
+	if UseSse42 {
+		return matchLenSSE4(a, b, max)
+	}
+	return matchLen(a, b, max)
 }
 
 func matchLen(a, b []byte, max int) int {
-	/*	if len(a) < max {
-			panic("a too short")
-		}
-		if len(b) < max {
-			panic("a too short")
-		}
-		if UseSse42 {
-			return matchLenSSE4(a, b, max)
-		}*/
 	a = a[:max]
 	b = b[:max]
 	for i, av := range a {
