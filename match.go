@@ -165,13 +165,16 @@ func find8(needle, haystack []byte, dst []uint32) {
 // find8Go is the reference implementation that mimmics the SSE4
 // implemenation.
 func find8Go(needle, haystack []byte, dst []uint32) {
-	end := uint(len(haystack) - 7)
+	end := uint(len(haystack) - 3)
+	end8 := uint(len(haystack) - 7)
 	for i := uint(0); i < end; i++ {
 		if needle[0] == haystack[i] && needle[1] == haystack[i+1] && needle[2] == haystack[i+2] && needle[3] == haystack[i+3] {
 			dst[i>>4] |= 1 << ((i & 15) << 1)
 		}
-		if needle[4] == haystack[i+4] && needle[5] == haystack[i+5] && needle[6] == haystack[i+6] && needle[7] == haystack[i+7] {
-			dst[i>>4] |= 2 << ((i & 15) << 1)
+		if i < end8 {
+			if needle[4] == haystack[i+4] && needle[5] == haystack[i+5] && needle[6] == haystack[i+6] && needle[7] == haystack[i+7] {
+				dst[i>>4] |= 2 << ((i & 15) * 2)
+			}
 		}
 	}
 }

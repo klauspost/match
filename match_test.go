@@ -2,6 +2,7 @@ package match
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	fuzz "github.com/google/gofuzz"
@@ -67,6 +68,52 @@ func ExampleMatchLen() {
 
 	fmt.Printf("Number of matching bytes: %d, first mismatch %d/%d\n", length, data[10+length], data[26+length])
 	// Output: Number of matching bytes: 6, first mismatch 0/100
+}
+
+func TestMatch8And4s16(t *testing.T) {
+	size := 16
+	ta := make([]byte, size)
+	found8, found4 := Match8And4(ta[0:8], ta, nil, nil)
+	expect4 := []int{9, 10, 11, 12}
+	expect8 := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	if !reflect.DeepEqual(found4, expect4) {
+		t.Errorf("4matches: got \n%#v, expected:\n%#v", found4, expect4)
+	}
+	if !reflect.DeepEqual(found8, expect8) {
+		t.Errorf("8matches: got \n%#v, expected:\n%#v", found8, expect8)
+	}
+	UseSse41 = false
+	found8, found4 = Match8And4(ta[0:8], ta, nil, nil)
+	if !reflect.DeepEqual(found4, expect4) {
+		t.Errorf("4matches: got \n%#v, expected:\n%#v", found4, expect4)
+	}
+	if !reflect.DeepEqual(found8, expect8) {
+		t.Errorf("8matches: got \n%#v, expected:\n%#v", found8, expect8)
+	}
+	UseSse41 = true
+}
+
+func TestMatch8And4s32(t *testing.T) {
+	size := 32
+	ta := make([]byte, size)
+	found8, found4 := Match8And4(ta[0:8], ta, nil, nil)
+	expect4 := []int{25, 26, 27, 28}
+	expect8 := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}
+	if !reflect.DeepEqual(found4, expect4) {
+		t.Errorf("4matches: got \n%#v, expected:\n%#v", found4, expect4)
+	}
+	if !reflect.DeepEqual(found8, expect8) {
+		t.Errorf("8matches: got \n%#v, expected:\n%#v", found8, expect8)
+	}
+	UseSse41 = false
+	found8, found4 = Match8And4(ta[0:8], ta, nil, nil)
+	if !reflect.DeepEqual(found4, expect4) {
+		t.Errorf("4matches: got \n%#v, expected:\n%#v", found4, expect4)
+	}
+	if !reflect.DeepEqual(found8, expect8) {
+		t.Errorf("8matches: got \n%#v, expected:\n%#v", found8, expect8)
+	}
+	UseSse41 = true
 }
 
 func TestMatchLen(t *testing.T) {
